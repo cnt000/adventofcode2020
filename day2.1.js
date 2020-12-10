@@ -1000,23 +1000,28 @@ const inputString = `4-8 g: ggtxgtgbg
 3-4 m: xmmmf`;
 
 const inputLineRegex = new RegExp(
-  '(?<from>[0-9]{0,3})-(?<to>[0-9]{0,3}) (?<letter>[a-z]): (?<password>[a-z]+)',
+  '(?<first>[0-9]{0,3})-(?<second>[0-9]{0,3}) (?<letter>[a-z]): (?<password>[a-z]+)',
 );
 const dynamicRegex = (from, to, letter) => new RegExp(`[${letter}]{${from},${to}}`)
 const input = inputString.split('\n');
-let resultCounter = 0;
+let result = 0;
 
 for (let i = 0; i < input.length; i++) {
   const line = input[i];
   const {
-    from,
-    to,
+    first,
+    second,
     letter,
     password
   } = line.match(inputLineRegex).groups;
-  const cleanedPassword = password.replace(new RegExp(`[^${letter}]`, 'g'), '');
-  if (cleanedPassword.length >= from && cleanedPassword.length <= to) {
-    resultCounter++;
+
+  const firstLetter = password[+first - 1];
+  const secondLetter = password[+second - 1];
+  const validationChars = `${firstLetter}${secondLetter}`;
+  const replaced = validationChars.replace(letter, '');
+  const isValid = replaced.length === 1 && replaced !== letter;
+  if (isValid) {
+      result++;
   }
 }
-console.log(resultCounter);
+console.log(result);
