@@ -1,4 +1,5 @@
 const { input } = require('./input/day4');
+const { input } = require('./input/day4');
 
 const passports = input.split('\n\n');
 const regex = (field) => `(.*?)[ \n]*${field}:(.*?)`;
