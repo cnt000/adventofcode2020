@@ -17,7 +17,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "day5.1.js"
+      "program": "day6.1.js"
     }
   ]
 }
