@@ -64,8 +64,8 @@ BBFFBBFRLL: row 102, column 4, seat ID 820.
 */
 const testTicket = () => {
   assert.deepStrictEqual(getPlace('BFFFBBFRRR'), 567);
-  // assert.deepStrictEqual(getPlace('FFFBBBFRRR'), 119);
-  // assert.deepStrictEqual(getPlace('BBFFBBFRLL'), 820);
+  assert.deepStrictEqual(getPlace('FFFBBBFRRR'), 119);
+  assert.deepStrictEqual(getPlace('BBFFBBFRLL'), 820);
 }
 testHalf();
 testTicket();
