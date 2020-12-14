@@ -10,4 +10,5 @@ for (let y = 1; y <= inputList.length - 1; y++) {
     result++;
   }
 }
+
 console.log(result);
