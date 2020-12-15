@@ -1,13 +1,33 @@
 const { input } = require('./input/day6');
 const assert = require('assert').strict;
 
-let result = 0;
+const contain = (input, color) => {
+  const lines = input.split('\n');
+  const regexContain = new RegExp(`(?<father>.*?) contain [0-9]{1} ${color}`);
+  const regexComma = new RegExp(
+    `(?<father>.*?) contain (.*), [0-9]{1} ${color}`,
+  );
+  return [
+    ...lines
+      .map((line) => line.match(regexContain)?.groups?.father)
+      .filter(Boolean),
+    ...lines
+      .map((line) => line.match(regexComma)?.groups?.father)
+      .filter(Boolean),
+  ];
+};
 
-const atLeastOneShinyGoldBag = () => {
-  return 4;
-}
+const atLeastOne = (initialColor, input) => {
+  const res = contain(input, initialColor);
+  const all = [...res, res.map((color) => contain(input, color))].flat(
+    Infinity,
+  );
+  const allNoDouble = new Set(all);
 
-const exampleRules = `light red bags contain 1 bright white bag, 2 muted yellow bags.
+  return [...allNoDouble].length;
+};
+
+const exampleRulesContain = `light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
 bright white bags contain 1 shiny gold bag.
 muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
@@ -17,17 +37,55 @@ vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
 faded blue bags contain no other bags.
 dotted black bags contain no other bags.`;
 
-/*
-In the above rules, the following options would be available to you:
-A bright white bag, which can hold your shiny gold bag directly.
-A muted yellow bag, which can hold your shiny gold bag directly, plus some other bags.
-A dark orange bag, which can hold bright white and muted yellow bags, either of which could then hold your shiny gold bag.
-A light red bag, which can hold bright white and muted yellow bags, either of which could then hold your shiny gold bag.
-So, in this example, the number of bag colors that can eventually contain at least one shiny gold bag is 4.
-*/
+const exampleRulesComma = `light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 dark olive bag, 1 shiny gold bag.
+muted yellow bags contain 5 faded blue bags, 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.`;
 
+const exampleRulesMixed = `light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 dark olive bag, 1 shiny gold bag.
+muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.`;
+
+console.log(atLeastOne('shiny gold bag', input));
+// console.log(contain(exampleRulesMixed, 'shiny gold bag'));
+
+
+/////////////TEST/////////////////////////////////////////////////
 const test = () => {
-  assert.deepStrictEqual(atLeastOneShinyGoldBag(exampleRules, 4));
-}
+  assert.deepStrictEqual(atLeastOne('shiny gold bag', exampleRulesContain), 4);
+};
 
-console.log(result);
+const testContain = () => {
+  assert.deepStrictEqual(
+    contain(exampleRulesContain, 'shiny gold bag').sort(),
+    ['bright white bags', 'muted yellow bags'],
+  );
+};
+const testComma = () => {
+  assert.deepStrictEqual(contain(exampleRulesComma, 'shiny gold bag').sort(), [
+    'bright white bags',
+    'muted yellow bags',
+  ]);
+};
+const testMixed = () => {
+  assert.deepStrictEqual(contain(exampleRulesMixed, 'shiny gold bag').sort(), [
+    'bright white bags',
+    'muted yellow bags',
+  ]);
+};
+
+test();
+testComma();
+testContain();
+testMixed();
