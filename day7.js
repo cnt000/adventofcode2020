@@ -1,20 +1,36 @@
-const { input } = require('./input/day6');
+const { input } = require('./input/day7');
 const assert = require('assert').strict;
 
+const lines = input.split('\n');
+const fatherAndSons = lines.map(line => line.split(' contain '));
+let result = [];
+
 const contain = (input, color) => {
-  const lines = input.split('\n');
-  const regexContain = new RegExp(`(?<father>.*?) contain [0-9]{1} ${color}`);
-  const regexComma = new RegExp(
-    `(?<father>.*?) contain (.*), [0-9]{1} ${color}`,
+  const regexColor = new RegExp(
+    `${color}`,
   );
-  return [
-    ...lines
-      .map((line) => line.match(regexContain)?.groups?.father)
-      .filter(Boolean),
-    ...lines
-      .map((line) => line.match(regexComma)?.groups?.father)
-      .filter(Boolean),
-  ];
+
+  for (let i = 0; i < fatherAndSons.length; i++) {
+    if(fatherAndSons[i][1].match(regexColor)) {
+      result.push(fatherAndSons[i][0]);
+    }
+  }
+  result.forEach((color) => contain('', color));
+
+
+
+  // const regexContain = new RegExp(`(?<father>.*?) contain [0-9]{1} ${color}`);
+  // const regexComma = new RegExp(
+  //   `(?<father>.*?) contain (.*), [0-9]{1} ${color}`,
+  // );
+  // return [
+  //   ...lines
+  //     .map((line) => line.match(regexContain)?.groups?.father)
+  //     .filter(Boolean),
+  //   ...lines
+  //     .map((line) => line.match(regexComma)?.groups?.father)
+  //     .filter(Boolean),
+  // ];
 };
 
 const atLeastOne = (initialColor, input) => {
