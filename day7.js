@@ -1,22 +1,15 @@
 const { input } = require('./input/day7');
 const splittedLines = input.split('\n');
-let dict = {}
 
 const contain = (colors, lines) => {
   const fathers = colors.map(color => {
-    const onlyColor = color.replace(/ bags$/, '');
-    const regexContain = new RegExp(`(?<father>.*?) contain (?<sons>.*?${color}.*?)`);
+    const regexContain = new RegExp(`(?<father>.*?) bags contain (?<sons>.*?${color})`);
     let results = [];
     lines.forEach(line => {
       const matches = line.match(regexContain);
-      const father = matches?.groups?.father?.replace(/ bags$/, '');
+      const father = matches?.groups?.father;
       if (father) {
         results.push(father);
-        // if (dict[color] instanceof Array) {
-        //   dict[onlyColor].push({ father, son: onlyColor});
-        // } else {
-        //   dict[onlyColor] = [{ father, son: onlyColor }]
-        // }
       }
     });
     return results;
@@ -26,7 +19,7 @@ const contain = (colors, lines) => {
 
 const recurse = (colors, fathers, lines) => {
   const results = contain(colors, lines);
-  if(results.length === 0) {
+  if (results.length === 0) {
     return fathers;
   }
   fathers = [...fathers, ...results];
@@ -45,8 +38,7 @@ dotted black bags contain no other bags.
 sdasd celeste bags contain 1 cavolo verde bags, 2 lorasdasri gialli bags.
 cavolo verde bags contain 1 light red bag, 2 lorri gialli bags.`;
 
-const fathers = new Set(recurse(['shiny gold bag'], [], splittedLines));
+const fathers = new Set(recurse(['shiny gold'], [], splittedLines));
 console.log('Exercise: ', [...fathers].length);
 const example = new Set(recurse(['shiny gold'], [], exampleRulesContain.split('\n')));
 console.log('Example: ', [...example].length);
-// console.log(dict);
