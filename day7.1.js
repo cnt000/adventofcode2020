@@ -1,7 +1,7 @@
 const { input } = require('./input/day7');
 const assert = require('assert').strict;
 const splittedLines = input.split('\n');
-let dict = {};
+let piero = {};
 
 const contain = (colors, lines) => {
   const fathers = colors.map(color => {
@@ -33,7 +33,7 @@ const recurse = (colors, fathers, lines) => {
   return recurse(results, fathers, lines);
 }
 
-const makeDict = (colors, lines) => {
+const makeDict = (colors, lines, dict) => {
   colors.forEach(color => {
     lines
       .forEach(line => {
@@ -46,15 +46,14 @@ const makeDict = (colors, lines) => {
             .split(', ')
             .map(e => e.replace(/ bag(s?\.?)/, '').trim());
           const colorSonsArray = colorSons.map(colorSon => ({ qty: colorSon.substring(0, 1), color: colorSon.substring(2, colorSon.length) }));
-          const thisDict = { color: color.color, qty: color.qty, sons: colorSonsArray };
-          if(!dict.sons) {
-            dict = thisDict;
-          } else {
-            const firstWithoutSons = searchMoreDepthSons(dict);
-            firstWithoutSons.sons = thisDict;
-          }
+          const thisDict = {
+            color: color.color,
+            qty: color.qty,
+            sons: colorSons[0] === 'no other' ? [] :colorSonsArray,
+          };
+          dict[color.color] = thisDict;
           if(thisDict.sons.length != 0) {
-            makeDict(thisDict.sons, lines);
+            makeDict(thisDict.sons, lines, dict);
           }
         }
         // dict[father.replace(/ bag(s?\.?)/, '').trim()] = sons
@@ -124,12 +123,14 @@ dark violet bags contain no other bags.`;
 makeDict([
   { qty: '1', color: 'dark olive' },
   { qty: '2', color: 'vibrant plum' }
-], example32.split('\n'));
-console.log(dict);
+], example32.split('\n'), piero);
+console.log(JSON.stringify(piero, null, 2));
+console.log(Object.keys(piero))
 // count('1 shiny gold');
 // console.log(counter);
-
-// makeDict(example126.split('\n'));
-// console.log(dict);
-// count('1 shiny gold');
-// console.log(counter);
+console.log('----------------------------------');
+const zio = {};
+makeDict([
+  { qty: '2', color: 'dark red' }
+], example126.split('\n'), zio);
+console.log(JSON.stringify(zio, null, 2));
