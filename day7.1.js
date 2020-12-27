@@ -20,47 +20,56 @@ dark blue bags contain 2 dark violet bags.
 dark violet bags contain no other bags.`;
 
 function find(color, lines) {
-  let result = {};
   const regex = new RegExp(`${color}.*?contain`)
-  const matchedLine = lines.find(line => {
-    return line.match(regex);
-  });
+  const matchedLine = findLine(regex, lines);
   const [shinyGold, sons] = matchedLine.replace(/bag(s?)(\.?)/g, '').trim().split(' contain ');
   const splittedSons = sons.split(',').map(s => s.trim());
-  result = {
+  return {
     color: shinyGold.trim(),
     qty: 1,
     sons: splittedSons.map(son => findSon(son, lines)),
   };
-  return result;
+}
+
+function findLine(regex, lines) {
+  return lines.find(line => {
+    return line.match(regex);
+  });
 }
 
 function findSon(son, lines) {
-  let abcd = {};
   const regex = new RegExp('([0-9]{1}) ([a-z ]+)');
   const [, qty, color] = son.trim().match(regex);
   const regexColor = new RegExp(`${color}.*?contain`)
-  const matchedLine = lines.find(line => {
-    return line.match(regexColor);
-  });
+  const matchedLine = findLine(regexColor, lines)
   const [, sons] = matchedLine.replace(/bag(s?)(\.?)/g, '').trim().split(' contain ');
-  if (sons === 'no other') {
-    abcd = [];
-  } else {
-    abcd = sons.split(',').map(color => color.trim());
-  }
+  const nephews = (sons === 'no other') ? [] : sons.split(',').map(color => color.trim());
   return {
     color: color,
     qty: qty,
-    sons: abcd.map(aaa => findSon(aaa, lines))
+    sons: nephews.map(nephew => findSon(nephew, lines))
   }
 }
 
+function countSons(dict, total) {
+  const sonsqty = dict.sons.reduce((acc, curr) => +acc + +curr.qty, 0);
+  dict.sons.forEach(son => {
+    total += son.qty * son.sons.reduce((acc, curr) => +acc + +curr.qty, 0);
+    total += countSons(son, total);
+    return total;
+  });
+  total += dict.qty * sonsqty;
+  if (dict.sons.length === 0) { return total; }
+  return total;
+}
+
 const dict32 = find('shiny gold', example32.split('\n'));
-console.log(JSON.stringify(dict32, null, 2));
+// console.log('Dict32: ', JSON.stringify(dict32, null, 2));
+console.log('Sons: ', countSons(dict32, 0));
 
 const dict126 = find('shiny gold', example126.split('\n'));
-console.log(JSON.stringify(dict126, null, 2));
+// console.log('Dict126:', JSON.stringify(dict126, null, 2));
+console.log('Sons: ', countSons(dict126, 0));
 
 // const dictInput = find('shiny gold', splittedLines);
-// console.log(JSON.stringify(dictInput, null, 2));
+// console.log('DictInput:', JSON.stringify(dictInput, null, 2));
