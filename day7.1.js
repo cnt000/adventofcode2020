@@ -19,57 +19,65 @@ dark green bags contain 2 dark blue bags.
 dark blue bags contain 2 dark violet bags.
 dark violet bags contain no other bags.`;
 
-function find(color, lines) {
-  const regex = new RegExp(`${color}.*?contain`)
-  const matchedLine = findLine(regex, lines);
-  const [shinyGold, sons] = matchedLine.replace(/bag(s?)(\.?)/g, '').trim().split(' contain ');
-  const splittedSons = sons.split(',').map(s => s.trim());
-  return {
-    color: shinyGold.trim(),
-    qty: 1,
-    sons: splittedSons.map(son => findSon(son, lines)),
-  };
-}
-
 function findLine(regex, lines) {
-  return lines.find(line => {
+  return lines.find((line) => {
     return line.match(regex);
   });
 }
+let sum = [];
 
-function findSon(son, lines) {
+function find(color, lines) {
+  const regex = new RegExp(`${color}.*?contain`);
+  const matchedLine = findLine(regex, lines);
+  const [shinyGold, sons] = matchedLine
+    .replace(/bag(s?)(\.?)/g, '')
+    .trim()
+    .split(' contain ');
+  const splittedSons = sons.split(',').map((s) => s.trim());
+  return {
+    color: shinyGold.trim(),
+    qty: 1,
+    count: 1,
+    sons: splittedSons.map((son) => findSon(son, lines, 1)),
+  };
+}
+
+function findSon(son, lines, count) {
   const regex = new RegExp('([0-9]{1}) ([a-z ]+)');
   const [, qty, color] = son.trim().match(regex);
-  const regexColor = new RegExp(`${color}.*?contain`)
-  const matchedLine = findLine(regexColor, lines)
-  const [, sons] = matchedLine.replace(/bag(s?)(\.?)/g, '').trim().split(' contain ');
-  const nephews = (sons === 'no other') ? [] : sons.split(',').map(color => color.trim());
+  const regexColor = new RegExp(`${color}.*?contain`);
+  const matchedLine = findLine(regexColor, lines);
+  const [, sons] = matchedLine
+  .replace(/bag(s?)(\.?)/g, '')
+  .trim()
+  .split(' contain ');
+  const nephews =
+  sons === 'no other' ? [] : sons.split(',').map((color) => color.trim());
+  sum.push(count * qty);
   return {
     color: color,
     qty: qty,
-    sons: nephews.map(nephew => findSon(nephew, lines))
-  }
-}
-
-function countSons(dict, total) {
-  const sonsqty = dict.sons.reduce((acc, curr) => +acc + +curr.qty, 0);
-  dict.sons.forEach(son => {
-    total += son.qty * son.sons.reduce((acc, curr) => +acc + +curr.qty, 0);
-    total += countSons(son, total);
-    return total;
-  });
-  total += dict.qty * sonsqty;
-  if (dict.sons.length === 0) { return total; }
-  return total;
+    count: count * qty,
+    sons: nephews.map((nephew) => findSon(nephew, lines, count * qty)),
+  };
 }
 
 const dict32 = find('shiny gold', example32.split('\n'));
 // console.log('Dict32: ', JSON.stringify(dict32, null, 2));
-console.log('Sons: ', countSons(dict32, 0));
+console.log(
+  'Result32: ',
+  sum.reduce((prev, curr) => prev + curr),
+);
 
+sum = [];
 const dict126 = find('shiny gold', example126.split('\n'));
 // console.log('Dict126:', JSON.stringify(dict126, null, 2));
-console.log('Sons: ', countSons(dict126, 0));
+console.log('Result126: ', sum.reduce((prev, curr) => prev + curr));
 
-// const dictInput = find('shiny gold', splittedLines);
+sum = [];
+const dictInput = find('shiny gold', splittedLines);
 // console.log('DictInput:', JSON.stringify(dictInput, null, 2));
+console.log(
+  'ResultInput: ',
+  sum.reduce((prev, curr) => prev + curr),
+);
