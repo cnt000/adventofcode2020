@@ -13,9 +13,9 @@ while(true) {
 console.log('Result: ', counter);
 
 function getNextPos(cmd) {
-  const regex = new RegExp(`(nop|acc|jmp) ([+|-]{1} [0-9]+)`);
+  const regex = new RegExp(`(nop|acc|jmp) ([+|-]{1}[0-9]+)`);
   const [, op, opValue] = cmd.match(regex);
-  const opNumber = Number(opValue.replace(' ', ''));
+  const opNumber = Number(opValue);
   const positionIncr = op === 'jmp' ? opNumber : 1;
   const counterIncr = op === 'acc' ? opNumber : 0;
   position += positionIncr;
