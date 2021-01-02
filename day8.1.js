@@ -11,47 +11,26 @@ acc +1
 jmp -4
 acc +6`.split('\n');
 
-// const exampleNoLoop = `nop +0
-// acc +1
-// jmp +4
-// acc +3
-// jmp -3
-// acc -99
-// acc +1
-// nop -4
-// acc +6`.split('\n');
-
-console.log(find(splittedLines));
-// path = [];
-// find(exampleNoLoop);
-// path = [];
-// find(splittedLines);
+console.log('Example:');
+find(exampleLoop);
+console.log('Input:');
+find(splittedLines);
 
 function find(input) {
   let position = 0;
   let acc = 0;
   const originalInput = [...input];
-  const [correctOrLoop, counter] = isCorrect(originalInput, acc);
-  if (correctOrLoop) {
-    console.log('correct', counter);
-    return;
-  } else {
-    console.log('loop', counter);
-  }
   while (true) {
-    // sostituisci la prima occorrenza di jmp o nop e salva la posizione di sostituzione
     const [inputFixed, substitutionPosition] = subsFirst(originalInput, position);
     position = substitutionPosition + 1;
-    console.log(inputFixed);
-    // prova con questo input, controlla che arriva in fondo, se si, finisce e torna counter, altrimenti cicla
     const [correctOrLoop, newAcc] = isCorrect([...inputFixed], acc);
-  //   acc += counter;
-    // console.log(correctOrLoop, substitutionPosition, newAcc, [...inputFixed]);
-    if (correctOrLoop) { return newAcc; }
+    if (correctOrLoop) {
+      console.log('Counter', newAcc);
+      return newAcc;
+    }
   }
 }
 
-// a jmp is supposed to be a nop, or a nop is supposed to be a jmp
 function subsFirst(input, start) {
   let foundIndex = 0;
   let modifiedInput = [...input];
@@ -71,7 +50,6 @@ function subsFirst(input, start) {
       }
     }
   }
-  // console.log(input, foundIndex);
   return [modifiedInput, foundIndex]
 }
 
@@ -82,10 +60,6 @@ function isCorrect(input, acc) {
     let [positionIncr, counterIncr] = getNextPos(input[position]);
     position += positionIncr;
     acc += counterIncr;
-    console.log(
-      position,
-      input.length
-    );
     if (position === input.length) {
       return [true, acc];
     }
